@@ -16,8 +16,8 @@ from torch.utils.tensorboard import SummaryWriter
 from utils.dataset import DatasetVerse
 from torch.utils.data import DataLoader, random_split
 
-dir_img = 'D:\\data\\train_data\\img'
-dir_mask = 'D:\\data\\train_data\\mask'
+dir_img = 'F:\\Verse_Data\\train_data\\img'
+dir_mask = 'F:\\Verse_Data\\train_data\\mask'
 dir_checkpoint = 'checkpoints/'
 
 
