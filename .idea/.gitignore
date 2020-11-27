@@ -2,7 +2,7 @@
 /shelf/
 /workspace.xml
 # Datasource local storage ignored files
-/../../../../:\python_workplace\Pytorch-UNet\.idea/dataSources/
+/../../../../:\pycodes\Unet2D_torchVersion\.idea/dataSources/
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/

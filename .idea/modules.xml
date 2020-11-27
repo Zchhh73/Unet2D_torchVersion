@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Pytorch-UNet.iml" filepath="$PROJECT_DIR$/.idea/Pytorch-UNet.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Unet2D_torchVersion.iml" filepath="$PROJECT_DIR$/.idea/Unet2D_torchVersion.iml" />
     </modules>
   </component>
 </project>
