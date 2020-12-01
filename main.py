@@ -2,7 +2,7 @@ import torch
 from torchvision.transforms import transforms as T
 import argparse
 from unet.unet_model import UNet
-from torch import optim
+from torch import nn, optim
 from utils.dataset import DatasetVerse
 from torch.utils.data import DataLoader
 
@@ -29,9 +29,10 @@ def train_model(model, criterion, optimizer, dataload, num_epochs=100):
         # minBatch
         step = 0
         for x, y in dataload:
-            optimizer.zero_grad()
+            step += 1
             inputs = x.to(device)
             labels = y.to(device)
+            optimizer.zero_grad()
             # 前向传播
             outputs = model(inputs)
             # 计算损失
@@ -40,34 +41,33 @@ def train_model(model, criterion, optimizer, dataload, num_epochs=100):
             loss.backward()
             optimizer.step()
             epoch_loss += loss.item()
-            step += 1
-            print("%d%d,train_loss:%0.3f" % (step, dataset_size // dataload.batch_size, loss.item()))
-        print("epoch %d loss:%0.3f" % (epoch, epoch_loss))
+            print("%d%d,train_loss:%0.3f" % (step, (dataset_size - 1) // dataload.batch_size + 1, loss.item()))
+        print("epoch %d loss:%0.3f" % (epoch, epoch_loss / step))
     torch.save(model.state_dict(), "weights_%d.pth" % epoch)
     return model
 
 
-def train():
-    model = UNet(n_channels=3, n_classes=1, bilinear=True).to(device)
+def train(args):
+    model = UNet(3, 1).to(device)
     batch_size = args.batch_size
-    criterion = torch.nn.BCELoss()
+    criterion = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(model.parameters())
     verse_data = DatasetVerse(dir_img, dir_mask, transform=x_transform, target_transform=y_transform)
     dataloader = DataLoader(verse_data, batch_size=batch_size, shuffle=True, num_workers=4)
     train_model(model, criterion, optimizer, dataloader)
 
 
-def test():
-    model = UNet(n_channels=3, n_classes=1, bilinear=True)
+def test(args):
+    model = UNet(3, 1)
     model.load_state_dict(torch.load(args.weight, map_location='cpu'))
     verse_data = DatasetVerse(dir_img, dir_mask, transform=x_transform, target_transform=y_transform)
-    dataloaders = DataLoader(verse_data)
+    dataloaders = DataLoader(verse_data,batch_size=1)
     model.eval()
     import matplotlib.pyplot as plt
     plt.ion()
     with torch.no_grad():
         for x, _ in dataloaders:
-            y = model(x)
+            y = model(x).sigmoid()
             img_y = torch.squeeze(y).numpy()
             plt.imshow(img_y)
             plt.pause(0.01)
@@ -77,11 +77,11 @@ def test():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('action', type=str, help='train or test')
-    parser.add_argument('--batch_size', type=int, default=4)
+    parser.add_argument('--batch_size', type=int, default=8)
     parser.add_argument('--weight', type=str, help='the path of the mode weight file')
     args = parser.parse_args()
 
     if args.action == 'train':
-        train()
+        train(args)
     elif args.action == 'test':
-        test()
+        test(args)
