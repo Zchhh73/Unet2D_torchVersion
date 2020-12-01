@@ -1,42 +1,29 @@
 import torch
-from torch.autograd import Function
+import torch.nn as nn
 
 
-class DiceCoeff(Function):
-    """Dice coeff for individual examples"""
+class DiceLoss(nn.Module):
+    def __init__(self):
+        super(DiceLoss, self).__init__()
+        self.epsilon = 1e-5
 
-    def forward(self, input, target):
-        self.save_for_backward(input, target)
-        eps = 0.0001
-        self.inter = torch.dot(input.view(-1), target.view(-1))
-        self.union = torch.sum(input) + torch.sum(target) + eps
+    def forward(self, predict, target):
+        assert predict.size() == target.size(), "the size of predict and target must be equal."
+        num = predict.size(0)
 
-        t = (2 * self.inter.float() + eps) / self.union.float()
-        return t
+        pre = torch.sigmoid(predict).view(num, -1)
+        tar = target.view(num, -1)
+        # 利用预测值与标签相乘作交集
+        intersection = (pre * tar).sum(-1).sum()
+        union = (pre + tar).sum(-1).sum()
 
-    # This function has only a single output, so it gets only one gradient
-    def backward(self, grad_output):
+        score = 1 - 2 * (intersection + self.epsilon) / (union + self.epsilon)
+        return score
 
-        input, target = self.saved_variables
-        grad_input = grad_target = None
-
-        if self.needs_input_grad[0]:
-            grad_input = grad_output * 2 * (target * self.union - self.inter) \
-                         / (self.union * self.union)
-        if self.needs_input_grad[1]:
-            grad_target = None
-
-        return grad_input, grad_target
-
-
-def dice_coeff(input, target):
-    """Dice coeff for batches"""
-    if input.is_cuda:
-        s = torch.FloatTensor(1).cuda().zero_()
-    else:
-        s = torch.FloatTensor(1).zero_()
-
-    for i, c in enumerate(zip(input, target)):
-        s = s + DiceCoeff().forward(c[0], c[1])
-
-    return s / (i + 1)
+# loss = DiceLoss()
+# predict = torch.randn(3, 4, 4)
+# target = torch.randn(3, 4, 4)
+# score = loss(predict, target)
+# print(predict)
+# print(target)
+# print(score)

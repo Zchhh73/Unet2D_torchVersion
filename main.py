@@ -5,6 +5,7 @@ from unet.unet_model import UNet
 from torch import nn, optim
 from utils.dataset import DatasetVerse
 from torch.utils.data import DataLoader
+from dice_loss import DiceLoss
 
 dir_img = 'F:\\Verse_Data\\train_data\\img'
 dir_mask = 'F:\\Verse_Data\\train_data\\mask'
@@ -51,6 +52,7 @@ def train(args):
     model = UNet(3, 1).to(device)
     batch_size = args.batch_size
     criterion = nn.BCEWithLogitsLoss()
+    # criterion = DiceLoss()
     optimizer = optim.Adam(model.parameters())
     verse_data = DatasetVerse(dir_img, dir_mask, transform=x_transform, target_transform=y_transform)
     dataloader = DataLoader(verse_data, batch_size=batch_size, shuffle=True, num_workers=4)
