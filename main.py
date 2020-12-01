@@ -7,8 +7,8 @@ from utils.dataset import DatasetVerse
 from torch.utils.data import DataLoader
 from dice_loss import DiceLoss
 
-dir_img = 'F:\\Verse_Data\\train_data\\img'
-dir_mask = 'F:\\Verse_Data\\train_data\\mask'
+dir_img = 'D:\\data\\train_data\\img'
+dir_mask = 'D:\\data\\train_data\\mask'
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -21,7 +21,7 @@ x_transform = T.Compose([
 y_transform = T.ToTensor()
 
 
-def train_model(model, criterion, optimizer, dataload, num_epochs=100):
+def train_model(model, criterion, optimizer, dataload, num_epochs=50):
     for epoch in range(num_epochs):
         print("Epoch {}/{}".format(epoch, num_epochs - 1))
         print('-' * 10)
@@ -42,14 +42,14 @@ def train_model(model, criterion, optimizer, dataload, num_epochs=100):
             loss.backward()
             optimizer.step()
             epoch_loss += loss.item()
-            print("%d%d,train_loss:%0.3f" % (step, (dataset_size - 1) // dataload.batch_size + 1, loss.item()))
+            print("%d %d,train_loss:%0.3f" % (step, (dataset_size - 1) // dataload.batch_size + 1, loss.item()))
         print("epoch %d loss:%0.3f" % (epoch, epoch_loss / step))
     torch.save(model.state_dict(), "weights_%d.pth" % epoch)
     return model
 
 
 def train(args):
-    model = UNet(3, 1).to(device)
+    model = UNet(3, 3).to(device)
     batch_size = args.batch_size
     criterion = nn.BCEWithLogitsLoss()
     # criterion = DiceLoss()
@@ -87,3 +87,4 @@ if __name__ == '__main__':
         train(args)
     elif args.action == 'test':
         test(args)
+
