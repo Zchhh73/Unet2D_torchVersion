@@ -44,7 +44,7 @@ def train_model(model, criterion, optimizer, dataload, num_epochs=50):
             epoch_loss += loss.item()
             print("%d %d,train_loss:%0.3f" % (step, (dataset_size - 1) // dataload.batch_size + 1, loss.item()))
         print("epoch %d loss:%0.3f" % (epoch, epoch_loss / step))
-    torch.save(model.state_dict(), "weights_%d.pth" % epoch)
+        torch.save(model.state_dict(), "weights_%d.pth" % epoch)
     return model
 
 
