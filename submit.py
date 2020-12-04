@@ -7,7 +7,7 @@ from PIL import Image
 import numpy as np
 
 from predict import predict_img
-from unet import UNet
+from model.unet import UNet
 
 # credits to https://stackoverflow.com/users/6076729/manuel-lagunas
 def rle_encode(mask_image):

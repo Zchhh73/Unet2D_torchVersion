@@ -1,11 +1,10 @@
 import torch
 from torchvision.transforms import transforms as T
 import argparse
-from unet.unet_model import UNet
+from model.unet import UNet
 from torch import nn, optim
 from utils.dataset import DatasetVerse
 from torch.utils.data import DataLoader
-from dice_loss import DiceLoss
 
 dir_img = 'D:\\data\\train_data\\img'
 dir_mask = 'D:\\data\\train_data\\mask'

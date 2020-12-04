@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from deeplab.sync_batchnorm import SynchronizedBatchNorm2d
+from model.deeplab.sync_batchnorm import SynchronizedBatchNorm2d
 
 
 class Decoder(nn.Module):
