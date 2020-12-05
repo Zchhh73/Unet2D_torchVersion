@@ -7,16 +7,16 @@ class PreDoubleConv(nn.Module):
     def __init__(self, in_ch, out_ch):
         super(PreDoubleConv, self).__init__()
         self.conv = nn.Sequential(
+            nn.BatchNorm2d(in_ch),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(in_ch, out_ch, kernel_size=3, padding=1),
             nn.BatchNorm2d(out_ch),
             nn.ReLU(inplace=True),
-            nn.Conv2d(out_ch, out_ch, 3, padding=1),
-            nn.BatchNorm2d(out_ch),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(in_ch, out_ch, 3, padding=1),
+            nn.Conv2d(out_ch, out_ch, kernel_size=3, padding=1),
         )
 
-    def forward(self, input):
-        return self.conv(input)
+    def forward(self, x):
+        return self.conv(x)
 
 
 class PreResUpBlock(nn.Module):
@@ -113,7 +113,7 @@ class UpBlock(nn.Module):
 class DeepResUNet(nn.Module):
     def __init__(self, args):
         super(DeepResUNet, self).__init__()
-        self.down_conv1 = PreResBlock(4, 64)
+        self.down_conv1 = PreResBlock(3, 64)
         self.down_conv2 = PreResBlock(64, 128)
         self.down_conv3 = PreResBlock(128, 256)
         self.down_conv4 = PreResBlock(256, 512)
@@ -141,7 +141,7 @@ class DeepResUNet(nn.Module):
 class HybridResUNet(nn.Module):
     def __init__(self, args):
         super(HybridResUNet, self).__init__()
-        self.down_conv1 = ResBlock(4, 64)
+        self.down_conv1 = ResBlock(3, 64)
         self.down_conv2 = ResBlock(64, 128)
         self.down_conv3 = ResBlock(128, 256)
         self.down_conv4 = ResBlock(256, 512)
@@ -164,3 +164,4 @@ class HybridResUNet(nn.Module):
         x = self.up_conv1(x, skip1_out)
         x = self.conv_last(x)
         return x
+
