@@ -154,11 +154,11 @@ def train(args, train_loader, model, criterion, optimizer, epoch, scheduler=None
         loss.backward()
         optimizer.step()
 
-        log = OrderedDict([
-            ('loss', losses.avg),
-            ('iou', ious.avg),
-        ])
-        return log
+    log = OrderedDict([
+        ('loss', losses.avg),
+        ('iou', ious.avg),
+    ])
+    return log
 
 
 def validate(args, val_loader, model, criterion):
@@ -285,11 +285,11 @@ def main():
         ], index=['epoch', 'lr', 'loss', 'iou', 'val_loss', 'val_iou'])
 
         log = log.append(tmp, ignore_index=True)
-        log.to_csv('models/%s/log.csv' % args.name, index=False)
+        log.to_csv('trained_models/%s/log.csv' % args.name, index=False)
         trigger += 1
 
         if val_log['iou'] > best_iou:
-            torch.save(trainModel.state_dict(), 'model/%s/model.pth' % args.name)
+            torch.save(trainModel.state_dict(), 'trained_models/%s/model.pth' % args.name)
             best_iou = val_log['iou']
             print('=> saved best model')
             trigger = 0
