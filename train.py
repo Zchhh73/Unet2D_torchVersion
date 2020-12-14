@@ -34,6 +34,7 @@ import pandas as pd
 # 模型导入
 import model.ResUnet.model as ResUnetModel
 import model.unet.unet_model as UnetModel
+import model.deeplab.deeplab_v3p as DeepLabModel
 
 arch_names = list(ResUnetModel.__dict__.keys())
 test = list(UnetModel.__dict__.keys())
