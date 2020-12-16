@@ -35,9 +35,10 @@ import pandas as pd
 import model.ResUnet.model as ResUnetModel
 import model.unet.unet_model as UnetModel
 import model.deeplab.deeplab_v3p as DeepLabModel
+import model.DilatedUnet.model as DilatedUnetModel
 
 arch_names = list(ResUnetModel.__dict__.keys())
-test = list(UnetModel.__dict__.keys())
+test = list(DilatedUnetModel.__dict__.keys())
 loss_names = list(losses.__dict__.keys())
 loss_names.append('BCEWithLogitsLoss')
 
@@ -57,7 +58,7 @@ def parse_args():
     parser.add_argument('--dataset', default="VerseData",
                         help='dataset name')
     # 输入通道数(B,C,H,W)
-    parser.add_argument('--input-channels', default=3, type=int,
+    parser.add_argument('--input_channels', default=3, type=int,
                         help='input channels')
     # 文件类型
     parser.add_argument('--image-ext', default='png',
@@ -293,6 +294,12 @@ def main():
             torch.save(trainModel.state_dict(), 'trained_models/%s/model.pth' % args.name)
             best_iou = val_log['iou']
             print('=> saved best model')
+            # 并保持当前最好的保存checkpoint
+            checkpoint = {"model_state_dict": trainModel.state_dict(),
+                          "optimizer_state_dict": optimizer.state_dict(),
+                          "epoch": epoch}
+            path_checkpoint = "trained_models/%s/checkpoint_%d_epoch.pkl" % (args.name, epoch)
+            torch.save(checkpoint,path_checkpoint)
             trigger = 0
         # early stopping
         if not args.early_stop is None:
@@ -308,4 +315,3 @@ if __name__ == '__main__':
     # print(arch_names)
     # print(test)
     # print(losses)
-
