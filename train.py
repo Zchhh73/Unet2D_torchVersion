@@ -7,7 +7,6 @@ from collections import OrderedDict
 import random
 import warnings
 from datetime import datetime
-
 import numpy as np
 from tqdm import tqdm
 
@@ -233,7 +232,7 @@ def main():
     # 创建模型
     print("=> creating model: %s " % args.arch)
     # 修改此处，即为修改模型
-    trainModel = ResUnetModel.__dict__[args.arch](args)
+    trainModel = DeepLabModel.__dict__[args.arch](args, backbone='resnet', output_stride=16, num_classes=3)
     trainModel = trainModel.cuda()
     print(count_params(trainModel))
 
@@ -244,7 +243,7 @@ def main():
                               momentum=args.momentum, weight_decay=args.weight_decay, nesterov=args.nesterov)
 
     train_dataset = VerseDataset(args, train_img_paths, train_mask_paths, args.aug)
-    val_dataset = VerseDataset(args, val_img_paths, val_img_paths, args.aug)
+    val_dataset = VerseDataset(args, val_img_paths, val_mask_paths, args.aug)
 
     # drop_last扔掉最后一个batch_size剩下的data
     train_loader = torch.utils.data.DataLoader(
