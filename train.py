@@ -37,7 +37,7 @@ import model.deeplab.deeplab_v3p as DeepLabModel
 import model.DilatedUnet.model as DilatedUnetModel
 import model.DenseUnet.model as DenseUnetModel
 
-arch_names = list(DenseUnetModel.__dict__.keys())
+arch_names = list(DilatedUnetModel.__dict__.keys())
 # test = list(DilatedUnetModel.__dict__.keys())
 loss_names = list(losses.__dict__.keys())
 loss_names.append('BCEWithLogitsLoss')
@@ -48,7 +48,7 @@ def parse_args():
     # 模型
     parser.add_argument('--name', default=None,
                         help='model name: (default: arch+timestamp)')
-    parser.add_argument('--arch', '-a', metavar='ARCH', default='DeepResUNet',
+    parser.add_argument('--arch', '-a', metavar='ARCH', default='DilatedResUnet',
                         choices=arch_names,
                         help='model architecture: ' +
                              ' | '.join(arch_names) +
@@ -80,7 +80,7 @@ def parse_args():
     parser.add_argument('--early-stop', default=60, type=int,
                         metavar='N', help='early stopping (default: 20)')
     # Batch_Size
-    parser.add_argument('-b', '--batch-size', default=2, type=int,
+    parser.add_argument('-b', '--batch-size', default=8, type=int,
                         metavar='N', help='mini-batch size (default: 16)')
     # 优化器
     parser.add_argument('--optimizer', default='Adam',
@@ -233,7 +233,7 @@ def main():
     # 创建模型
     print("=> creating model: %s " % args.arch)
     # 修改此处，即为修改模型
-    trainModel = DenseUnetModel.__dict__[args.arch]()
+    trainModel = DilatedUnetModel.__dict__[args.arch](3, 3, deep_supervision=False)
     trainModel = trainModel.cuda()
     print(count_params(trainModel))
 
