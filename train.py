@@ -35,9 +35,10 @@ import model.ResUnet.model as ResUnetModel
 import model.unet.unet_model as UnetModel
 import model.deeplab.deeplab_v3p as DeepLabModel
 import model.DilatedUnet.model as DilatedUnetModel
+import model.DenseUnet.model as DenseUnetModel
 
-arch_names = list(ResUnetModel.__dict__.keys())
-test = list(DilatedUnetModel.__dict__.keys())
+arch_names = list(DenseUnetModel.__dict__.keys())
+# test = list(DilatedUnetModel.__dict__.keys())
 loss_names = list(losses.__dict__.keys())
 loss_names.append('BCEWithLogitsLoss')
 
@@ -73,10 +74,10 @@ def parse_args():
                              ' | '.join(loss_names) +
                              ' (default: BCEDiceLoss)')
     # epochs次数
-    parser.add_argument('--epochs', default=10000, type=int, metavar='N',
+    parser.add_argument('--epochs', default=100, type=int, metavar='N',
                         help='number of total epochs to run')
     # 早过拟合停止
-    parser.add_argument('--early-stop', default=20, type=int,
+    parser.add_argument('--early-stop', default=60, type=int,
                         metavar='N', help='early stopping (default: 20)')
     # Batch_Size
     parser.add_argument('-b', '--batch-size', default=2, type=int,
@@ -222,8 +223,8 @@ def main():
     cudnn.benchmark = True
 
     # 数据集载入
-    img_paths = glob(r'D:\data\train_data\img\*')
-    mask_paths = glob(r'D:\data\train_data\mask\*')
+    img_paths = glob(r'/hdd/chenkecheng/zchhh_data/train_data_256x256/img/*')
+    mask_paths = glob(r'/hdd/chenkecheng/zchhh_data/train_data_256x256/mask/*')
     train_img_paths, val_img_paths, train_mask_paths, val_mask_paths = \
         train_test_split(img_paths, mask_paths, test_size=0.2, random_state=41)
     print("train_nums:%s" % str(len(train_img_paths)))
@@ -232,7 +233,7 @@ def main():
     # 创建模型
     print("=> creating model: %s " % args.arch)
     # 修改此处，即为修改模型
-    trainModel = DeepLabModel.__dict__[args.arch](args, backbone='resnet', output_stride=16, num_classes=3)
+    trainModel = DenseUnetModel.__dict__[args.arch]()
     trainModel = trainModel.cuda()
     print(count_params(trainModel))
 
