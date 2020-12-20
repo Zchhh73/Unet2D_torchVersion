@@ -38,7 +38,7 @@ import model.DilatedUnet.model as DilatedUnetModel
 import model.DenseUnet.model as DenseUnetModel
 import model.DAUnet.DAU_model as DAUnetModel
 
-arch_names = list(DilatedUnetModel.__dict__.keys())
+arch_names = list(DAUnetModel.__dict__.keys())
 loss_names = list(losses.__dict__.keys())
 loss_names.append('BCEWithLogitsLoss')
 # test = list(DilatedUnetModel.__dict__.keys())
@@ -234,11 +234,11 @@ def main():
     # 创建模型
     print("=> creating model: %s " % args.arch)
     # 修改此处，即为修改模型
-    trainModel = DilatedUnetModel.__dict__[args.arch](3, 3, deep_supervision=False)
+    trainModel = DAUnetModel.__dict__[args.arch]()
     trainModel = trainModel.cuda()
     params_model = count_params(trainModel) / (1024 * 1024)
     print("参数：%.2f" % (params_model) + "MB")
-    with open("trained_models/%s/args.txt" % args.name, 'w') as f:
+    with open("trained_models/%s/args.txt" % args.name, 'a') as f:
         print('params-count:%s' % (params_model) + "MB", file=f)
 
     if args.optimizer == 'Adam':
