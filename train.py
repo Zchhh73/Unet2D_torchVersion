@@ -36,12 +36,12 @@ import model.unet.unet_model as UnetModel
 import model.deeplab.deeplab_v3p as DeepLabModel
 import model.DilatedUnet.model as DilatedUnetModel
 import model.DenseUnet.model as DenseUnetModel
+import model.DAUnet.DAU_model as DAUnetModel
 
 arch_names = list(DilatedUnetModel.__dict__.keys())
-# test = list(DilatedUnetModel.__dict__.keys())
 loss_names = list(losses.__dict__.keys())
 loss_names.append('BCEWithLogitsLoss')
-
+# test = list(DilatedUnetModel.__dict__.keys())
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -68,7 +68,7 @@ def parse_args():
     # 数据增强
     parser.add_argument('--aug', default=False, type=str2bool)
     # 损失函数
-    parser.add_argument('--loss', default='BCEDiceLoss',
+    parser.add_argument('--loss', default='DiceLoss',
                         choices=loss_names,
                         help='loss: ' +
                              ' | '.join(loss_names) +
@@ -100,6 +100,7 @@ def parse_args():
     # 牛顿动量法
     parser.add_argument('--nesterov', default=False, type=str2bool,
                         help='nesterov')
+
     args = parser.parse_args()
     return args
 
@@ -197,9 +198,9 @@ def main():
     args = parse_args()
     if args.name is None:
         if args.deepsupervision:
-            args.name = '%s_%s_withDS' % (args.dataset, args.arch)
+            args.name = '%s_%s_%s_withDS' % (args.dataset, args.arch, args.loss)
         else:
-            args.name = '%s_%s_withoutDS' % (args.dataset, args.arch)
+            args.name = '%s_%s_%s_withoutDS' % (args.dataset, args.arch, args.loss)
     if not os.path.exists('trained_models/%s' % args.name):
         os.makedirs('trained_models/%s' % args.name)
     # 记录参数到文件
@@ -223,8 +224,8 @@ def main():
     cudnn.benchmark = True
 
     # 数据集载入
-    img_paths = glob(r'/hdd/chenkecheng/zchhh_data/train_data_256x256/img/*')
-    mask_paths = glob(r'/hdd/chenkecheng/zchhh_data/train_data_256x256/mask/*')
+    img_paths = glob(r'F:\Verse_Data\train_data_256x256\img\*')
+    mask_paths = glob(r'F:\Verse_Data\train_data_256x256\mask\*')
     train_img_paths, val_img_paths, train_mask_paths, val_mask_paths = \
         train_test_split(img_paths, mask_paths, test_size=0.2, random_state=41)
     print("train_nums:%s" % str(len(train_img_paths)))
@@ -235,7 +236,10 @@ def main():
     # 修改此处，即为修改模型
     trainModel = DilatedUnetModel.__dict__[args.arch](3, 3, deep_supervision=False)
     trainModel = trainModel.cuda()
-    print(count_params(trainModel))
+    params_model = count_params(trainModel) / (1024 * 1024)
+    print("参数：%.2f" % (params_model) + "MB")
+    with open("trained_models/%s/args.txt" % args.name, 'w') as f:
+        print('params-count:%s' % (params_model) + "MB", file=f)
 
     if args.optimizer == 'Adam':
         optimizer = optim.Adam(filter(lambda p: p.requires_grad, trainModel.parameters()), lr=args.lr)
@@ -299,7 +303,7 @@ def main():
                           "optimizer_state_dict": optimizer.state_dict(),
                           "epoch": epoch}
             path_checkpoint = "trained_models/%s/checkpoint_%d_epoch.pkl" % (args.name, epoch)
-            torch.save(checkpoint,path_checkpoint)
+            torch.save(checkpoint, path_checkpoint)
             trigger = 0
         # early stopping
         if not args.early_stop is None:
