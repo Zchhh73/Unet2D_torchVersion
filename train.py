@@ -196,6 +196,7 @@ def validate(args, val_loader, model, criterion):
 
 def main():
     args = parse_args()
+    os.environ['CUDA_VISIBLE_DEVICES'] = '4'
     if args.name is None:
         if args.deepsupervision:
             args.name = '%s_%s_%s_withDS' % (args.dataset, args.arch, args.loss)
