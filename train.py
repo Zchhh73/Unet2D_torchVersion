@@ -37,8 +37,9 @@ import model.deeplab.deeplab_v3p as DeepLabModel
 import model.DilatedUnet.model as DilatedUnetModel
 import model.DenseUnet.model as DenseUnetModel
 import model.DAUnet.DAU_model as DAUnetModel
+import model.CEnet.CEN_model as CEnetModel
 
-arch_names = list(DAUnetModel.__dict__.keys())
+arch_names = list(CEnetModel.__dict__.keys())
 loss_names = list(losses.__dict__.keys())
 loss_names.append('BCEWithLogitsLoss')
 # test = list(DilatedUnetModel.__dict__.keys())
@@ -196,7 +197,7 @@ def validate(args, val_loader, model, criterion):
 
 def main():
     args = parse_args()
-    os.environ['CUDA_VISIBLE_DEVICES'] = '4'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
     if args.name is None:
         if args.deepsupervision:
             args.name = '%s_%s_%s_withDS' % (args.dataset, args.arch, args.loss)
@@ -225,8 +226,8 @@ def main():
     cudnn.benchmark = True
 
     # 数据集载入
-    img_paths = glob(r'F:\Verse_Data\train_data_256x256\img\*')
-    mask_paths = glob(r'F:\Verse_Data\train_data_256x256\mask\*')
+    img_paths = glob(r'/hdd/zchhh/train_data_256x256/img/*')
+    mask_paths = glob(r'/hdd/zchhh/train_data_256x256/mask/*')
     train_img_paths, val_img_paths, train_mask_paths, val_mask_paths = \
         train_test_split(img_paths, mask_paths, test_size=0.2, random_state=41)
     print("train_nums:%s" % str(len(train_img_paths)))
@@ -235,7 +236,7 @@ def main():
     # 创建模型
     print("=> creating model: %s " % args.arch)
     # 修改此处，即为修改模型
-    trainModel = DAUnetModel.__dict__[args.arch]()
+    trainModel = CEnetModel.__dict__[args.arch]()
     trainModel = trainModel.cuda()
     params_model = count_params(trainModel) / (1024 * 1024)
     print("参数：%.2f" % (params_model) + "MB")
