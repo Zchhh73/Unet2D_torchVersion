@@ -70,7 +70,7 @@ def parse_args():
     # 数据增强
     parser.add_argument('--aug', default=False, type=str2bool)
     # 损失函数
-    parser.add_argument('--loss', default='DiceLoss',
+    parser.add_argument('--loss', default='BCEDiceLoss',
                         choices=loss_names,
                         help='loss: ' +
                              ' | '.join(loss_names) +
@@ -199,7 +199,7 @@ def validate(args, val_loader, model, criterion):
 def main():
     ssl._create_default_https_context = ssl._create_unverified_context
     args = parse_args()
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
     if args.name is None:
         if args.deepsupervision:
             args.name = '%s_%s_%s_withDS' % (args.dataset, args.arch, args.loss)
