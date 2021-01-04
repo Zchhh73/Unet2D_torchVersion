@@ -8,6 +8,7 @@ import random
 import warnings
 from datetime import datetime
 import numpy as np
+import ssl
 from tqdm import tqdm
 
 from sklearn.model_selection import train_test_split
@@ -196,6 +197,7 @@ def validate(args, val_loader, model, criterion):
 
 
 def main():
+    ssl._create_default_https_context = ssl._create_unverified_context
     args = parse_args()
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
     if args.name is None:
@@ -317,6 +319,7 @@ def main():
 
 
 if __name__ == '__main__':
+
     main()
     # print(arch_names)
     # print(test)
