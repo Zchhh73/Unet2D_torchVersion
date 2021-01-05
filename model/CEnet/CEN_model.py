@@ -366,7 +366,7 @@ class CE_Net_backbone_inception_blocks(nn.Module):
         out = self.finalconv2(out)
         out = self.finalrelu2(out)
         out = self.finalconv3(out)
-        return F.sigmoid(out)
+        return torch.sigmoid(out)
 
 
 if __name__ == '__main__':
