@@ -11,7 +11,7 @@ from model.deeplab.backbone import build_backbone
 
 
 class DeepLab(nn.Module):
-    def __init__(self, num_classes, backbone='resnet', output_stride=16,
+    def __init__(self, args,num_classes, backbone='resnet', output_stride=16,
                  sync_bn=True, freeze_bn=False):
         super(DeepLab, self).__init__()
         if sync_bn == True:

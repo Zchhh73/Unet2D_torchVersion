@@ -1,10 +1,8 @@
 import torch
 import torch.nn as nn
+from torch.nn import init
 import torch.nn.functional as F
-import torchvision
-import numpy as np
-import math
-import cv2
+
 
 
 def init_weights(net, init_type='normal', gain=0.02):
@@ -143,9 +141,9 @@ class Attention_block(nn.Module):
         return x * psi
 
 
-class AttU_Net(nn.Module):
+class AttentionUNet(nn.Module):
     def __init__(self, img_ch=3, output_ch=3):
-        super(AttU_Net, self).__init__()
+        super(AttentionUNet, self).__init__()
 
         self.Maxpool = nn.MaxPool2d(kernel_size=2, stride=2)
 

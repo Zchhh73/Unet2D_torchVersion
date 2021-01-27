@@ -21,10 +21,10 @@ class DoubleConv(nn.Module):
 
 
 class UNet(nn.Module):
-    def __init__(self, in_ch, out_ch):
+    def __init__(self, args):
         super(UNet, self).__init__()
 
-        self.conv1 = DoubleConv(in_ch, 64)
+        self.conv1 = DoubleConv(3, 64)
         self.pool1 = nn.MaxPool2d(2)
         self.conv2 = DoubleConv(64, 128)
         self.pool2 = nn.MaxPool2d(2)
@@ -41,7 +41,7 @@ class UNet(nn.Module):
         self.conv8 = DoubleConv(256, 128)
         self.up9 = nn.ConvTranspose2d(128, 64, 2, stride=2)
         self.conv9 = DoubleConv(128, 64)
-        self.conv10 = nn.Conv2d(64, out_ch, 1)
+        self.conv10 = nn.Conv2d(64, 3, 1)
 
     def forward(self, x):
         c1 = self.conv1(x)

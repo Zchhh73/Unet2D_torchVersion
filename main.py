@@ -6,8 +6,8 @@ from torch import nn, optim
 from utils.dataset import DatasetVerse
 from torch.utils.data import DataLoader
 
-dir_img = 'D:\\data\\train_data\\img'
-dir_mask = 'D:\\data\\train_data\\mask'
+dir_img = 'F:\\Verse_Data\\train_data\\img'
+dir_mask = 'F:\\Verse_Data\\train_data\\mask'
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
